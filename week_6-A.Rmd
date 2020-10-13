@@ -47,11 +47,11 @@ str(tib)
 
 ```{r}
 
-tib <- tibble(replicate = 1:1000) %>%
+tib <- tibble(replicate = 1:10000) %>%
   mutate(samp = map(replicate, ~sample_n(urn, size = 50, replace = TRUE))) %>%
   mutate(num_red = map_int(samp, ~sum(.$color == "red"))) %>%
   mutate(percent_red = num_red*100/50) %>%
-  summarize(occurence = (sum((percent_red > 50)/1000)*100))
+  summarize(occurence = (sum((percent_red > 50)/10000)))
  tib 
 
 
@@ -79,8 +79,10 @@ rbinom(n = 1, size = 25, prob = 0.4)
 
 tibble(numb_red_urn = seq(from = 100, to = 700, by = 100),
        numb_red_paddle = map(numb_red_urn, ~(rbinom(n = 10, size = 25, prob = 0.4)))) %>%
-  unnest(cols = numb_red_paddle)
-
+  unnest(cols = numb_red_paddle) %>%
+  group_by(numb_red_urn) %>%
+  pivot_wider(names_from = numb_red_urn, values_from = numb_red_paddle) %>%
+  unnest()
 
 ```
 
